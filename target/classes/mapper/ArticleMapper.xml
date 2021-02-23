@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace与相应的接口绑定-->
+<mapper namespace="com.fanta.dao.ArticleDao">
+
+    <select id="countArticles" resultType="Integer">
+        select count(0) from article where article.delete_status = '1'
+    </select>
+
+    <select id="listArticle" resultType="com.alibaba.fastjson.JSONObject">
+        select
+            a.id                                        id,
+            a.content                                   content,
+            date_format(a.create_time, '%Y.%m.%d.%T')   createTime
+        from article a
+        where a.delete_status = '1'
+        order by a.id desc
+        limit #{offSet},#{pageRow}
+    </select>
+
+    <insert id="addArticle" parameterType="com.alibaba.fastjson.JSONObject">
+        insert into article (content) values (#{content})
+    </insert>
+
+    <update id="updateArticle" parameterType="com.alibaba.fastjson.JSONObject">
+        update article set content = #{content} where id = #{id}
+    </update>
+
+    <delete id="deleteArticle" parameterType="com.alibaba.fastjson.JSONObject">
+        delete from article where id = #{id}
+    </delete>
+
+</mapper>

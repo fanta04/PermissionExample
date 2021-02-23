@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace与相应的接口绑定-->
+<mapper namespace="com.fanta.dao.PermissionDao">
+
+    <resultMap id="permissionMap" type="com.fanta.util.model.One2Many">
+        <id property="userId" column="userId"/>
+        <result property="nickname" column="nickname"/>
+        <result property="roleId" column="roleId"/>
+        <result property="roleName" column="roleName"/>
+        <collection property="menuList" ofType="String">
+            <id property="menuCode" column="menuCode"/>
+        </collection>
+        <collection property="permissionList" ofType="String">
+            <id property="permissionCode" column="permissionCode"/>
+        </collection>
+    </resultMap>
+
+    <!--获取用户的所有权限-->
+    <select id="getUserPermissions" resultMap="permissionMap">
+        select u.id,
+        u.id                userId,
+        u.nickname          nickname,
+        r.id                roleId,
+        r.role_name         roleName,
+        p.menu_code         menuCode,
+        p.permission_code   permissionCode
+        from sys_user u
+        left join sys_role r on u.role_id = r.id
+        left join sys_role_permission rp on u.role_id = rp.role_id
+        left join sys_permission p on rp.permission_id = p.id and rp.delete_status = '1'
+        where u.username = #{username} and u.delete_status = '1'
+    </select>
+
+    <select id="getAllMenu" resultType="String">
+        select p.menu_code menuCode
+        from sys_permission p
+        order by p.id
+    </select>
+
+    <select id="getAllPermissions" resultType="String">
+        select p.permission_code permissionCode
+        from sys_permission p
+        order by p.id
+    </select>
+</mapper>
